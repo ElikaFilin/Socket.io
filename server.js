@@ -7,15 +7,23 @@ app.get('/', (req, res) => {
 })
 
 io.on('connection', (socket) => {
-    // socket.broadcast.emit('cnt', 'connected ' + socket.id );
+
+    socket.emit('cnt', 'connected ' + socket.id );
     socket.on('request', (msg) => {
         const number = Number(msg);
         if(!!number || number === 0) socket.emit('response', number + 1);
-        else socket.emit('response', 'from: ' + socket.id + msg);
+        else socket.emit('response', 'from: ' + socket.id + ' ' + msg);
     });
-    // socket.broadcast.emit('close', 'closed ' + socket.id);
+    socket.emit('disconnect', 'disconnected ' + socket.id);
+    socket.on('error', (error) => {
+        console.log(error)
+    })
 });
 
 server.listen(3000, () => {
     console.log('listening on *:3000');
+})
+
+process.on('exit', (code) => {
+    console.log(`About to exit with code: ${code}`);
 })
